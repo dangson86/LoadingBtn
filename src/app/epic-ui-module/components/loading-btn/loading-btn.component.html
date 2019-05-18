@@ -1,11 +1,30 @@
-<span class="btnWrapper" (click)="onWrapperClick($event)" *ngIf="!(isLoading$ | async)">
-  <button class="mainBtn" mat-raised-button [color]="color" [disabled]="disable">{{btnText}}</button>
-  <!-- <button mat-icon-button class="mainBtn">
-    <mat-icon aria-label="Example icon-button with a heart icon">favorite</mat-icon>
-  </button> -->
-</span>
-<span class="loadingWrapper" (click)="$event.preventDefault();$event.stopPropagation()" *ngIf="(isLoading$ | async)">
-  <div class="lds-circle">
-    <div [style.background-color]="loadingIconColor"></div>
-  </div>
-</span>
+<ng-container [ngSwitch]="template">
+  <span class="btnWrapper" #btnWrapper>
+    <ng-container *ngSwitchCase="'template1'">
+
+      <button class="mainBtn" mat-raised-button [color]="color" *ngIf="!(isLoading$ | async)"
+        [disabled]="disable || (isLoading$|async)">{{btnText}}</button>
+
+      <span class="loadingWrapper" (click)="$event.preventDefault();$event.stopPropagation()"
+        *ngIf="(isLoading$ | async)">
+        <div class="lds-circle">
+          <div [style.background-color]="loadingIconColor"></div>
+        </div>
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="'template2'">
+      <button class="mainBtn" mat-raised-button [color]="color" [disabled]="disable || (isLoading$|async)">
+        <span [class.animateText]='myClass'>
+          {{btnText}}
+        </span>
+        <span [class.animateLoadingIcon]='myClass' class="loadingWrapper loadingWrapper2"
+          (click)="$event.preventDefault();$event.stopPropagation()">
+          <div class="lds-circle">
+            <div [style.background-color]="loadingIconColor"></div>
+          </div>
+        </span>
+      </button>
+    </ng-container>
+  </span>
+
+</ng-container>

@@ -8,19 +8,25 @@
 </div>
 
 
-<h3>Testing button</h3>
 
-<div class="divWrapper" *ngFor="let item of list">
-  <app-loading-btn [color]="'basic'" [btnText]="'basic'" (click)="onClick($event)"></app-loading-btn>
-  <app-loading-btn #myBtn [btnText]="item.btnText" [disable]="false" (stageChange)="onStageChange($event)"
-    (click)="onClick($event)">
+
+<div class="divWrapper" *ngFor="let item of list;  index as i">
+  <hr />
+  <h4>{{item.template}}</h4>
+  <app-loading-btn [template]="item.template" [color]="'basic'" [btnText]="'basic'" (click)="onClick($event)">
   </app-loading-btn>
-  <app-loading-btn [color]="'accent'" [btnText]="'accent'" (click)="onClick($event)"></app-loading-btn>
-  <app-loading-btn [color]="'warn'" [btnText]="'warn'" (click)="onClick($event)"></app-loading-btn>
-  <app-loading-btn [btnText]="'disabled'" [disable]="true" (click)="onClick($event)"></app-loading-btn>
+  <app-loading-btn [template]="item.template" #myBtn [btnText]="item.btnText" (click)="onClick($event)">
+  </app-loading-btn>
+  <app-loading-btn [template]="item.template" [color]="'accent'" [btnText]="'accent'" (click)="onClick($event)">
+  </app-loading-btn>
+  <app-loading-btn [template]="item.template" [color]="'warn'" [btnText]="'warn'" (click)="onClick($event)">
+  </app-loading-btn>
+  <app-loading-btn [template]="item.template" [btnText]="'disabled'" [disable]="true" (click)="onClick($event)">
+  </app-loading-btn>
 
   <br />
   <br />
+  <button (click)="myBtn.toggleclass()">toggle class</button>
   <button (click)="myBtn.setLoading(true)">set loading</button>
   <button (click)="myBtn.setLoading(false)">reset</button>
   <button (click)="myBtn.disable = !myBtn.disable">toogle disable</button>

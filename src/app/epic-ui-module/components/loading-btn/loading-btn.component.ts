@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener, Renderer2, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { tap, takeWhile, catchError } from 'rxjs/operators';
+import { Component, OnInit, Input, Output, EventEmitter, ElementRef, HostListener, Renderer2, OnDestroy, ViewChild } from '@angular/core';
+import { BehaviorSubject, Observable, of, Subscription, fromEvent } from 'rxjs';
+import { tap, takeWhile, catchError, debounce, debounceTime, throttleTime } from 'rxjs/operators';
 @Component({
   selector: 'app-loading-btn',
   templateUrl: './loading-btn.component.html',
@@ -13,17 +13,38 @@ export class LoadingBtnComponent implements OnInit, OnDestroy {
   @Input() btnText: string;
   @Input() disable: boolean;
   @Input() color: string = 'primary';
+  @Input() template: string = 'template1';
   @Output() stageChange: EventEmitter<any> = new EventEmitter();
   @Output() click: EventEmitter<LoadingMouseEvent> = new EventEmitter();
   loadingIconColor: string;
   destroyed: boolean;
   isloadingSub: Subscription;
+  myClass: boolean;
+  @ViewChild('btnWrapper') private btnWrapper: ElementRef;
+  private _throttleTime = 1000;//take input every 1s, prevent duplicate click
   constructor() { }
 
   ngOnInit() {
-    this.isloadingSub = this.isLoading$.subscribe(e => {
+    fromEvent(this.btnWrapper.nativeElement, 'click')
+      .pipe(
+        tap((event: MouseEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }),
+        throttleTime(this._throttleTime)//take input every 1s, prevent duplicate click
+      )
+      .subscribe((event: MouseEvent) => {
+        if (!this.disable) {
+          const temp = (event as LoadingMouseEvent);
+          temp.isLoading = this.isLoading$.getValue();
+          temp.setObservable = this.setObservable.bind(this);
+          this.click.emit(temp);
+        }
+      });
+    this.isloadingSub = this.isLoading$.subscribe(loading => {
       this.loadingIconColor = this.getRandomColor();
-      this.stageChange.emit(e);
+      this.stageChange.emit(loading);
+      this.myClass = loading;
     });
   }
   ngOnDestroy(): void {
@@ -39,16 +60,7 @@ export class LoadingBtnComponent implements OnInit, OnDestroy {
     }
   }
 
-  onWrapperClick(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!this.disable) {
-      const temp = (event as LoadingMouseEvent);
-      temp.isLoading = this.isLoading$.getValue();
-      temp.setObservable = this.setObservable.bind(this);
-      this.click.emit(temp);
-    }
-  }
+
   setObservable(input: Observable<any>): Observable<any> {
     if (input != null) {
       this.isLoading$.next(true);
@@ -61,6 +73,9 @@ export class LoadingBtnComponent implements OnInit, OnDestroy {
       );
     }
     return input;
+  }
+  toggleclass() {
+    this.myClass = !this.myClass;
   }
   private getRandomColor(): string {
     const letters = '0123456789ABCDEF';

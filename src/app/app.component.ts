@@ -15,19 +15,18 @@ export class AppComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       this.list.push({
-        btnText: 'hello ' + i.toString()
+        btnText: 'hello ' + i.toString(),
+        template: 'template' + (i + 1)
       });
     }
   }
 
-  onStageChange(e) {
-    console.log('is loading', e);
-  }
   onClick(event: LoadingMouseEvent) {
-    const temp = timer(2000);
-    console.log('loading start');
+    const value = this.getRandomInt(1000, 4000);
+    const temp = timer(value);
+    console.log('loading start ' + value);
     event.setObservable(temp).subscribe(e => {
       console.log('loading stop');
     }, error => {
@@ -36,8 +35,11 @@ export class AppComponent implements OnInit {
     });
 
   }
-  divHandle(event) {
-    console.log('catch by div', event.defaultPrevented, event.cancelBubble);
+
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
   }
 }
 
