@@ -1,0 +1,11 @@
+<span class="btnWrapper" (click)="onWrapperClick($event)" *ngIf="!(isLoading$ | async)">
+  <button class="mainBtn" mat-raised-button [color]="color" [disabled]="disable">{{btnText}}</button>
+  <!-- <button mat-icon-button class="mainBtn">
+    <mat-icon aria-label="Example icon-button with a heart icon">favorite</mat-icon>
+  </button> -->
+</span>
+<span class="loadingWrapper" (click)="$event.preventDefault();$event.stopPropagation()" *ngIf="(isLoading$ | async)">
+  <div class="lds-circle">
+    <div [style.background-color]="loadingIconColor"></div>
+  </div>
+</span>
